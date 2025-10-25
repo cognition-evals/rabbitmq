@@ -2,6 +2,7 @@ services:
 - type: web
   name: rabbitmq
   env: docker
+
   envVars:
   - key: RABBITMQ_ERLANG_COOKIE
     generateValue: true
@@ -10,23 +11,8 @@ services:
   - key: RABBITMQ_DEFAULT_PASS
     generateValue: true
 
-  # Persist only the Mnesia dir (see: https://github.com/docker-library/rabbitmq/issues/171)
+  # see: https://github.com/docker-library/rabbitmq/issues/171
   disk:
     name: rabbitmq
     mountPath: /var/lib/rabbitmq/mnesia
     sizeGB: 10
-
-  # Ensure strict cookie perms + correct ownership before starting RabbitMQ
-  dockerCommand: >
-    bash -lc '
-      mkdir -p /var/lib/rabbitmq /var/lib/rabbitmq/mnesia &&
-      # If Render provided a cookie, write it with a restrictive umask.
-      if [ -n "$RABBITMQ_ERLANG_COOKIE" ]; then
-        umask 177 &&
-        printf "%s" "$RABBITMQ_ERLANG_COOKIE" > /var/lib/rabbitmq/.erlang.cookie
-      fi &&
-      # Be extra safe if the file already existed.
-      chmod 600 /var/lib/rabbitmq/.erlang.cookie || true &&
-      chown -R rabbitmq:rabbitmq /var/lib/rabbitmq /var/lib/rabbitmq/.erlang.cookie /var/lib/rabbitmq/mnesia || true &&
-      exec docker-entrypoint.sh rabbitmq-server
-    '

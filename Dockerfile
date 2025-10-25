@@ -1,7 +1,5 @@
-FROM rabbitmq:3.9-management
-
-COPY rabbitmq.conf /etc/rabbitmq/
+FROM rabbitmq:3.8.15-management
 
 ENV RABBITMQ_NODENAME=rabbit@localhost
 
-RUN chown rabbitmq:rabbitmq /etc/rabbitmq/rabbitmq.conf
+COPY rabbitmq.conf /etc/rabbitmq/rabbitmq.conf
