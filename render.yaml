@@ -11,5 +11,8 @@ services:
     generateValue: true
   disk:
     name: rabbitmq
-    mountPath: /var/lib/rabbitmq
+    mountPath: /var/lib/rabbitmq/mnesia # see: https://github.com/docker-library/rabbitmq/issues/171
     sizeGB: 10
+  dockerCommand: >
+    /bin/bash -lc 'chown -R rabbitmq:rabbitmq /var/lib/rabbitmq/mnesia &&
+                   exec docker-entrypoint.sh rabbitmq-server'
